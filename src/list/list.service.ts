@@ -29,7 +29,7 @@ export class ListService {
     return await this.listRepository.getAllLists();
   }
 
-  getAllTasksByList(id: string) {
-    return this.listRepository.getAllTasksByList(id);
+  getAllTasksByList() {
+    return this.listRepository.getAllTasksByList();
   }
 }

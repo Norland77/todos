@@ -17,6 +17,10 @@ export class ListController {
 
   @Post('create')
   async createList(@Body() dto: ListDto) {
+    if (dto.name === '') {
+      throw new BadRequestException();
+    }
+
     const list = await this.listService.findListByName(dto.name);
 
     if (list) {
@@ -59,14 +63,8 @@ export class ListController {
     return await this.listService.getAllLists();
   }
 
-  @Get('tasks/:Id')
-  async getAllTasksByList(@Param('Id') id: string) {
-    const list = await this.listService.findListById(id);
-
-    if (!list) {
-      throw new BadRequestException(`List with id ${id} is not exist`);
-    }
-
-    return this.listService.getAllTasksByList(id);
+  @Get('tasks')
+  async getAllTasksByList() {
+    return this.listService.getAllTasksByList();
   }
 }

@@ -52,17 +52,14 @@ export class ListRepository {
     return this.prismaService.list.findMany();
   }
 
-  async getAllTasksByList(id: string) {
-    const list = await this.prismaService.list.findFirst({
-      where: {
-        id,
-      },
+  async getAllTasksByList() {
+    const lists = await this.prismaService.list.findMany({
       include: {
         Tasks: true,
       },
     });
+    if (!lists || lists.length === 0) return [];
 
-    if (!list) return null;
     const getAllSubtasks = async (tasks) => {
       return await Promise.all(
         tasks.map(async (task) => {
@@ -79,8 +76,21 @@ export class ListRepository {
       );
     };
 
-    list.Tasks = await getAllSubtasks(list.Tasks);
+    await Promise.all(
+      lists.map(async (list) => {
+        list.Tasks = await this.prismaService.task.findMany({
+          where: {
+            listId: list.id,
+            taskId: null,
+          },
+          orderBy: {
+            Priority: 'desc',
+          },
+        });
+        list.Tasks = await getAllSubtasks(list.Tasks);
+      }),
+    );
 
-    return list;
+    return lists;
   }
 }

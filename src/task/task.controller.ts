@@ -25,7 +25,7 @@ export class TaskController {
     @Param('ListId') listId: string,
     @Param('TaskId') taskId?: string,
   ) {
-    if (taskId) {
+    if (taskId !== undefined) {
       const task = await this.taskService.findTaskById(taskId);
 
       if (!task) {
